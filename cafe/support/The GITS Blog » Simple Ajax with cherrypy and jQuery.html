@@ -1,0 +1,1457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0078)http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"><head profile="http://gmpg.org/xfn/11"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+
+<link rel="stylesheet" href="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/style.css" type="text/css">
+<title>The GITS Blog  » Simple Ajax with cherrypy and jQuery</title>
+<link rel="shortcut icon" href="http://ginstrom.com/scribbles/wp-content/themes/atahualpa/images/favicon/20-favicon.ico"><link rel="alternate" type="application/rss+xml" title="The GITS Blog RSS Feed" href="http://ginstrom.com/scribbles/feed/">
+<link rel="alternate" type="application/atom+xml" title="The GITS Blog Atom Feed" href="http://ginstrom.com/scribbles/feed/atom/">
+<link rel="pingback" href="http://ginstrom.com/scribbles/xmlrpc.php">
+<script type="text/javascript" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/ruthsarian_utilities.js"></script>
+<script type="text/javascript">
+	<!--
+	if ( ( typeof( sfHover ) ).toLowerCase() != 'undefined' ) { event_attach( 'onload' , function () { 
+	sfHover( 'rmenu2' );	sfHover( 'rmenu' );	
+	if (document.getElementById("recent-comments") != null) { sfHover( 'recent-comments' ); }
+	if (document.getElementById("bfa-recent-comments") != null) {sfHover( 'bfa-recent-comments' ); }
+		} ); }
+	//-->
+</script>
+<script type="text/javascript" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/jquery-1.2.6.min.js"></script>
+<script type="text/javascript">
+<!--
+var $bfa = jQuery.noConflict();
+$bfa(document).ready(function(){    
+	// IE6 max-width for images 
+	if ($bfa.browser.msie && /MSIE 6\.0/i.test(window.navigator.userAgent) && !/MSIE 7\.0/i.test(window.navigator.userAgent)) {
+	var centerwidth = $bfa("td#middle").width(); 
+	// without caption
+	$bfa(".post img").each(function() { 
+		var maxwidth = centerwidth - 10 + 'px';
+		var imgwidth = $bfa(this).width(); 
+		var imgheight = $bfa(this).height(); 
+		var newimgheight = (centerwidth / imgwidth * imgheight) + 'px';	
+		if (imgwidth > centerwidth) { 
+			$bfa(this).css({width: maxwidth}); 
+			$bfa(this).css({height: newimgheight}); 
+		}
+	});
+	// with caption
+	$bfa("div.wp-caption").each(function() { 
+		var captionwidth = $bfa(this).width(); 
+		var maxcaptionwidth = centerwidth + 'px';
+		var captionheight = $bfa(this).height();
+		var captionimgwidth =  $bfa("div.wp-caption img").width();
+		var captionimgheight =  $bfa("div.wp-caption img").height();
+		if (captionwidth > centerwidth) { 
+			$bfa(this).css({width: maxcaptionwidth}); 
+			var newcaptionheight = (centerwidth / captionwidth * captionheight) + 'px';
+			var newcaptionimgheight = (centerwidth / captionimgwidth * captionimgheight) + 'px';
+			$bfa(this).css({height: newcaptionheight}); 
+			$bfa("div.wp-caption img").css({height: newcaptionimgheight}); 
+			}
+	});
+	}
+		$bfa(".post table tr").mouseover(function() {$bfa(this).addClass("over");}).mouseout(function() {$bfa(this).removeClass("over");});
+			$bfa(".post table tr:even").addClass("alt");
+			$bfa("input.text, input.TextField, input.file, input.password, textarea").focus(function () {  $bfa(this).addClass("highlight"); }).blur(function () { $bfa(this).removeClass("highlight"); })
+		$bfa("input.inputblur").focus(function () {  $bfa(this).addClass("inputfocus"); }).blur(function () { $bfa(this).removeClass("inputfocus"); })
+		$bfa("input.button, input.Button").mouseover(function() {$bfa(this).addClass("buttonhover");}).mouseout(function() {$bfa(this).removeClass("buttonhover");});
+	// toggle "you can use these xhtml tags
+	$bfa("a.xhtmltags").click(function(){ $bfa("div.xhtml-tags").slideToggle(300); });
+});
+//-->
+</script>
+<style type="text/css">
+body {
+	font-family: tahoma, arial, sans-serif;
+font-size: 1.0em;
+color: #000000;
+background: #ffffff;	}
+
+a:link, a:visited, a:active {
+	color: #7A1000; 
+	font-weight: bold; 
+	text-decoration: none; 
+	}
+	
+a:hover {
+	color: #CC0000;
+	font-weight: bold; 
+	text-decoration: underline; 
+	}
+		
+
+div#wrapper {
+	width: 99%;
+		}
+
+
+div#container {
+	padding: 0;		}
+
+.colone {width: 200px;}
+.colthree {width: 200px;}
+	
+table#logoarea {
+	border-spacing: 0px;
+		}
+	
+.logo {
+	margin: 0 10px 0 0;	}
+
+h1.blogtitle {
+	margin: 0;
+padding:0;
+letter-spacing:-1px;
+line-height: 1.0em;
+
+			font-family: tahoma, arial, sans-serif;
+font-size: 240%;	}
+	
+h1.blogtitle a:link, 
+h1.blogtitle a:visited, 
+h1.blogtitle a:active {
+	color: #666666;
+	font-weight: bold;
+	}
+	
+h1.blogtitle a:hover {
+	color: #000000;
+	font-weight: bold;
+	}
+
+p.tagline { 
+	margin: 0;
+padding: 0;
+font-size:1.2em;
+font-weight: bold;
+color: #666666;	}
+
+div.rss-box {
+	width: 280px;
+	}
+	
+.searchbox {
+	height: 35px;
+	border-top: 1px dashed #ccc;
+border-right: 1px dashed #ccc;
+border-bottom: 0;
+
+			border-left: 1px dashed #ccc;
+width: 200px;
+margin: 0;
+padding: 0;	}
+
+.horbar1 {
+	height: 5px;
+background: #ffffff;
+border-top: dashed 1px #cccccc;	}
+	
+.horbar2 { 
+	height: 5px;
+background: #ffffff;
+border-bottom: dashed 1px #cccccc;	}	
+
+	
+
+.opacityleft {
+	background-color: #FFFFFF; 
+	height: 150px;
+	width: 200px; 
+	filter: alpha(opacity=40);
+	-moz-opacity:.40;
+	opacity:.40;
+	}
+
+.opacityright {
+	background-color: #FFFFFF; 
+	height: 150px;
+	width: 200px; 
+	filter: alpha(opacity=40);
+	-moz-opacity:.40;
+	opacity:.40;
+	}
+
+
+div.clickable {
+	height: 150px; 
+	}
+		
+td#left {
+	border-right: dashed 1px #CCCCCC;
+padding: 10px 10px 10px 10px;
+background: #ffffff;	}
+
+td#right {
+	border-left: dashed 1px #CCCCCC;
+padding: 10px 10px 10px 10px;
+background: #ffffff;	}
+
+td#middle {
+	padding: 10px 15px;	}
+
+td#footer {
+	width: auto;
+	background-color: #ffffff;
+border-top: dashed 1px #cccccc;
+padding: 10px;
+
+			text-align: center;
+color: #777777;
+font-size: 95%;	}
+
+td#footer a:link, td#footer a:visited, td#footer a:active {
+	text-decoration: none;
+color: #777777;
+font-weight: normal;	}
+
+td#footer a:hover {
+	text-decoration: none;
+color: #777777;
+font-weight: normal;	}
+	
+div.widget {
+	margin: 0 0 15px 0;	}
+
+div.widget-title {
+		}
+
+div.widget-title h3 {
+		}	
+	
+div.widget-content {
+		}
+
+div.widget select { 
+	 
+}	
+	
+.widget ul li {
+	margin: 2px 0 2px 0px;
+	}
+
+.widget ul li ul li {
+	margin: 2px 0 2px 5px;  
+	}
+
+.widget ul li ul li ul li {
+	margin: 2px 0 2px 5px;  
+	}
+	
+.widget ul li a:link, 
+.widget ul li a:visited, 
+.widget ul li a:active {
+	padding: 0 0 0 5px; 
+	color: #666666; 
+	border-left: solid 7px #cccccc; 
+	}
+
+.widget ul li ul li a:link, 
+.widget ul li ul li a:visited, 
+.widget ul li ul li a:active {
+	padding: 0 0 0 5px; 
+	color: #666666; 
+	border-left: solid 7px #cccccc; 
+	}
+
+.widget ul li ul li ul li a:link, 
+.widget ul li ul li ul li a:visited, 
+.widget ul li ul li ul li a:active {
+	padding: 0 0 0 5px; 
+	color: #666666; 
+	border-left: solid 7px #cccccc; 
+	}
+
+	
+.widget ul li a:hover {
+	color: #000000; 
+	border-left: solid 7px #000000; 
+	}
+
+.widget ul li ul li a:hover {
+	color: #000000; 
+	border-left: solid 7px #000000; 
+	}
+
+.widget ul li ul li ul li a:hover {
+	color: #000000; 
+	border-left: solid 7px #000000; 
+	}
+	
+.widget_categories ul li a:link, 
+.widget_categories ul li a:visited, 
+.widget_categories ul li a:active,
+.widget_categories ul li a:hover {
+	display: inline !important;  
+	}
+	
+div#get_recent_comments_wrap ul li ul li,
+.widget_recent_comments ul li, 
+.widget_simple_recent_comments ul li {
+	padding: 0 0 0 5px; 
+	border-left: solid 7px #cccccc; 
+	}
+
+div#get_recent_comments_wrap ul li ul li ul li, 
+.widget_recent_comments ul li ul li, 
+.widget_simple_recent_comments ul li ul li {
+	padding: 0 0 0 5px; 
+	border-left: solid 7px #cccccc; 
+	}
+
+.widget_recent_comments ul li ul li ul li, 
+.widget_simple_recent_comments ul li ul li ul li {
+	padding: 0 0 0 5px; 
+	border-left: solid 7px #cccccc; 
+	}	
+	
+div#get_recent_comments_wrap ul li ul li:hover, 
+.widget_recent_comments ul li:hover, 
+.widget_simple_recent_comments ul li:hover, 
+div#get_recent_comments_wrap ul li ul li.sfhover, 	
+.widget_recent_comments ul li.sfhover, 
+.widget_simple_recent_comments ul li.sfhover {	
+	border-left: solid 7px #000000; 
+	}
+
+div#get_recent_comments_wrap ul li ul li ul li:hover, 
+.widget_recent_comments ul li ul li:hover, 
+.widget_simple_recent_comments ul li ul li:hover, 	
+div#get_recent_comments_wrap ul li ul li ul li.sfhover, 
+.widget_recent_comments ul li ul li.sfhover, 
+.widget_simple_recent_comments ul li ul li.sfhover {	
+	border-left: solid 7px #000000; 
+	}
+
+.widget_recent_comments ul li ul li ul li:hover, 
+.widget_simple_recent_comments ul li ul li ul li:hover, 	
+.widget_recent_comments ul li ul li ul li.sfhover, 
+.widget_simple_recent_comments ul li ul li ul li.sfhover {	
+	border-left: solid 7px #000000; 
+	}
+	
+div.post {
+	margin: 0 0 30px 0;
+	}
+
+.sticky {
+	background: #eee url(http://ginstrom.com/scribbles/wp-content/themes/atahualpa/images/sticky.gif) 99% 5% no-repeat;
+border: dashed 1px #ccc;
+padding: 10px;	}
+
+div.post-kicker {
+	margin: 0 0 5px 0;
+	}
+
+div.post-kicker a:link, 
+div.post-kicker a:visited, 
+div.post-kicker a:active {
+	color: #000000;
+text-decoration: none;
+text-transform: uppercase;	}
+
+div.post-kicker a:hover {
+	color: #cc0000;	}
+
+div.post-headline {
+		}
+
+div.post-headline h2 {
+	padding: 0;
+margin: 0;
+	}
+
+div.post-headline h2 a:link, 
+div.post-headline h2 a:visited, 
+div.post-headline h2 a:active {
+	color: #666666;
+text-decoration: none;
+	}
+
+div.post-headline h2 a:hover {
+	color: #000000;
+text-decoration: none;
+	}
+	
+div.post-byline {
+	margin: 5px 0 10px 0;	}
+
+div.post-byline a:link, 
+div.post-byline a:visited, 
+div.post-byline a:active {
+		}
+
+div.post-byline a:hover {
+		}
+
+div.post-bodycopy {
+		}
+	
+div.post-footer {
+	margin: 0;
+padding: 5px;
+background: #eeeeee;
+color: #666;
+line-height: 18px;	}
+
+div.post-footer a:link, 
+div.post-footer a:visited, 
+div.post-footer a:active {
+	color: #333;
+font-weight: normal;
+text-decoration: none;	}	
+
+div.post-footer a:hover {
+	color: #333;
+font-weight: normal;
+text-decoration: underline;	}
+
+.navigation-top {
+	margin: 0 0 10px 0;
+padding: 10px 0 10px 0;
+border-bottom: dashed 1px #ccc;	}
+
+.navigation-middle {
+	margin: 10px 0 20px 0;
+padding: 10px 0 10px 0;
+border-top: dashed 1px #ccc;
+border-bottom: dashed 1px #ccc;	}
+	
+.navigation-bottom {
+	margin: 20px 0 0 0;
+padding: 10px 0 10px 0;
+border-top: dashed 1px #ccc;	}
+
+.navigation-comments-above {
+	margin: 0 0 10px 0;
+padding: 5px 0 5px 0;	}
+	
+.navigation-comments-below {
+	margin: 0 0 10px 0;
+padding: 5px 0 5px 0;	}
+	
+input.text, 
+input.password, 
+input.file,
+input.TextField, 
+textarea {
+	color: #000000;
+border-top: solid 1px #333333;
+border-left: solid 1px #333333;
+
+			border-right: solid 1px #999999;
+border-bottom: solid 1px #cccccc;
+	background: url(http://ginstrom.com/scribbles/wp-content/themes/atahualpa/images/inputbackgr.gif) top left no-repeat;	}
+	
+input.highlight, textarea.highlight {
+	background: #e8eff7;
+border-color: #37699f;	}
+
+.button, .Button {
+	background-color: #777777;
+color: #ffffff;
+border: solid 2px #555555;
+font-weight: bold;	}
+	
+.buttonhover {
+	background-color: #6b9c6b;
+color: #ffffff;
+border: solid 2px #496d49;	}
+
+form#commentform input#submit	{
+	padding: 4px 10px 4px 10px;
+font-size: 1.2em;
+line-height: 1.5em;
+height: 36px;	}
+	
+blockquote {
+	color: #555555;
+padding: 1em 1em;
+background: #f4f4f4;
+border: solid 1px #e1e1e1;	
+	}
+	
+blockquote blockquote {
+	color: #444444;
+padding: 1em 1em;
+background: #e1e1e1;
+border: solid 1px #d3d3d3;	}
+
+.post table {
+	border-collapse: collapse;
+margin: 10px 0;	}
+	
+.post table caption {
+	background: #eeeeee;
+border: #999999;
+padding: 4px 8px;
+color: #666666;	}
+	
+.post table th {
+	background: #888888;
+color: #ffffff;
+font-weight: bold;
+font-size: 90%;
+padding: 4px 8px;
+
+			border: solid 1px #ffffff;
+text-align: left;	}
+	
+.post table td {
+	padding: 4px 8px;
+background-color: #ffffff;
+border-bottom: 1px solid #dddddd;
+text-align: left;	}
+
+.post table tfoot td {
+		}
+	
+.post table tr.alt td {
+	background: #f4f4f4;	}
+
+.post table tr.over td {
+	background: #e2e2e2;	}
+
+ol.commentlist {
+	border-top: dotted 1px #cccccc;
+	}
+	
+ol.commentlist li {
+	background-color: #FFFFFF;
+	border-bottom: dotted 1px #cccccc;
+	}
+
+ol.commentlist li.alt {
+	background-color: #F6F6F6;
+	border-bottom: dotted 1px #cccccc;
+	}
+
+ol.commentlist li.authorcomment {
+	background-color: #FFECEC;
+	}
+
+ol.commentlist span.authorname {
+	font-size: 110%;
+	}
+
+ul.commentlist {
+	border-top: dotted 1px #cccccc;
+	}
+
+ul.commentlist li.thread-even {
+	background-color: #FFFFFF;
+	border-bottom: dotted 1px #cccccc;
+	}
+
+ul.commentlist li.thread-odd {
+	background-color: #F6F6F6;
+	border-bottom: dotted 1px #cccccc;
+	}
+
+ul.commentlist li.bypostauthor {
+	background-color: #FFECEC;
+	}
+	
+/* reset children */
+
+ul.commentlist li ul.children, 
+ul.commentlist li ul.children li, 
+ul.commentlist li ul.children li.bypostauthor  {
+	background-color: transparent;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	display: block;
+	height: 1%;  /* for IE */
+	}
+
+ul.commentlist span.authorname {
+	font-size: 110%;
+	}
+
+a.page-numbers:link, 
+a.page-numbers:visited, 
+a.page-numbers:active {
+	color: #7A1000; 
+	border-color: #7A1000;
+	}
+
+a.page-numbers:hover {
+	color: #CC0000; 
+	border-color: #CC0000;
+	}
+
+.post img { padding: 5px;
+border: solid 1px #dddddd;
+background-color: #f3f3f3;
+-moz-border-radius: 3px;
+
+			-khtml-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px; }
+
+.wp-caption { border: 1px solid #dddddd;
+text-align: center;
+background-color: #f3f3f3;
+padding-top: 4px;
+
+			margin: 10px 0 0 0;
+-moz-border-radius: 3px;
+-khtml-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px; }
+
+.wp-caption p.wp-caption-text {
+	font-size: 0.8em;
+line-height: 13px;
+padding: 2px 4px 5px;
+margin: 0;
+color: #666666;	}
+
+img.avatar { 
+	margin: 0 8px 1px 0;
+padding: 3px;
+border: solid 1px #ddd;
+background-color: #f3f3f3;
+
+			-moz-border-radius: 3px;
+-khtml-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px; 
+	}
+	
+div#respond {
+	margin: 25px 0;
+padding: 25px;
+background: #eee;
+-moz-border-radius: 8px;
+-khtml-border-radius: 8px;
+-webkit-border-radius: 8px;
+border-radius: 8px; 
+	}
+	
+div#menu1 ul.rMenu-ver, div#menu1 ul.rMenu-ver ul
+	{
+	width: 11em;	
+	}
+
+div#menu2 ul.rMenu-ver, div#menu2 ul.rMenu-ver ul
+	{
+	width: 11em;	
+	}
+	
+ul.rMenu
+	{
+	background: #FFFFFF;
+	border: dashed 1px #cccccc;
+	}
+
+ul#rmenu
+	{
+	background: #777777;
+	border: solid 1px #000000;
+	}
+
+ul.rMenu li a
+	{
+	border: dashed 1px #cccccc;	
+	}
+
+ul#rmenu li a
+	{
+	border: solid 1px #000000;	
+	}
+
+div#menu1 ul.rMenu-ver
+	{
+	border-top: dashed 1px #cccccc;	
+	}
+
+div#menu2 ul.rMenu-ver
+	{
+	border-top: solid 1px #000000;	
+	}
+	
+ul.rMenu li a:link, ul.rMenu li a:hover, ul.rMenu li a:visited, ul.rMenu li a:active
+	{
+	color: #777777;
+	text-transform: uppercase;
+	font: 14px Verdana, Tahoma, sans-serif;  
+	}
+
+ul#rmenu li a:link, ul#rmenu li a:hover, ul#rmenu li a:visited, ul#rmenu li a:active
+	{
+	color: #ffffff;
+	text-transform: uppercase;
+	font: 11px Arial, Verdana, sans-serif; 
+	}
+	
+ul.rMenu li
+	{
+	background-color: #FFFFFF;	
+	}
+
+ul#rmenu li
+	{
+	background-color: #777777;	
+	}
+	
+ul.rMenu li:hover,
+ul.rMenu li.sfhover
+	{
+	background-color: #DDDDDD;	
+	}
+
+ul#rmenu li:hover,
+ul#rmenu li.sfhover
+	{
+	background-color: #000000;	
+	}
+
+ul.rMenu li.current_page_item a:link, 
+ul.rMenu li.current_page_item a:active, 
+ul.rMenu li.current_page_item a:hover, 
+ul.rMenu li.current_page_item a:visited, 
+ul.rMenu li a:hover
+	{
+	background-color: #EEEEEE;
+	color: #000000;
+	}
+
+ul#rmenu li.current-cat a:link, 
+ul#rmenu li.current-cat a:active, 
+ul#rmenu li.current-cat a:hover, 
+ul#rmenu li.current-cat a:visited, 
+ul#rmenu li a:hover
+	{
+	background-color: #cc0000;
+	color: #ffffff;
+	}
+
+div#menu1 ul.rMenu li.rMenu-expand a,
+div#menu1 ul.rMenu li.rMenu-expand li.rMenu-expand a,
+div#menu1 ul.rMenu li.rMenu-expand li.rMenu-expand li.rMenu-expand a,
+div#menu1 ul.rMenu li.rMenu-expand li.rMenu-expand li.rMenu-expand li.rMenu-expand a,
+div#menu1 ul.rMenu li.rMenu-expand li.rMenu-expand li.rMenu-expand li.rMenu-expand li.rMenu-expand a 
+	{
+	background-image: url(http://ginstrom.com/scribbles/wp-content/themes/atahualpa/images/expand-right.gif);
+	}
+
+div#menu2 ul.rMenu li.rMenu-expand a,
+div#menu2 ul.rMenu li.rMenu-expand li.rMenu-expand a,
+div#menu2 ul.rMenu li.rMenu-expand li.rMenu-expand li.rMenu-expand a,
+div#menu2 ul.rMenu li.rMenu-expand li.rMenu-expand li.rMenu-expand li.rMenu-expand a,
+div#menu2 ul.rMenu li.rMenu-expand li.rMenu-expand li.rMenu-expand li.rMenu-expand li.rMenu-expand a 
+	{
+	background-image: url(http://ginstrom.com/scribbles/wp-content/themes/atahualpa/images/expand-right-white.gif);
+	}
+	
+div#menu1 ul.rMenu-hor li.rMenu-expand a
+	{
+	background-image: url(http://ginstrom.com/scribbles/wp-content/themes/atahualpa/images/expand-down.gif);
+	}
+	
+div#menu2 ul.rMenu-hor li.rMenu-expand a
+	{
+	background-image: url(http://ginstrom.com/scribbles/wp-content/themes/atahualpa/images/expand-down-white.gif);
+	}
+	
+</style>
+<link rel="alternate" type="application/rss+xml" title="The GITS Blog » Simple Ajax with cherrypy and jQuery Comments Feed" href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/feed/">
+<script type="text/javascript" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/comment-reply.js"></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://ginstrom.com/scribbles/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://ginstrom.com/scribbles/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="Experts Needed" href="http://ginstrom.com/scribbles/2010/03/04/experts-needed/">
+<link rel="next" title="Translator bait and switch" href="http://ginstrom.com/scribbles/2010/04/10/translator-bait-and-switch/">
+<meta name="generator" content="WordPress 3.4">
+<link rel="canonical" href="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/The GITS Blog » Simple Ajax with cherrypy and jQuery.html">
+<link rel="shortlink" href="http://ginstrom.com/scribbles/?p=1503">
+<link rel="stylesheet" href="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/geshi.css" type="text/css">	<meta name="robots" content="ALL">
+</head>
+<body>
+<div id="wrapper">
+<div id="container">
+<table id="layout" border="0" cellspacing="0" cellpadding="0">
+<colgroup>
+<col class="coltwo">
+<col class="colthree">
+</colgroup> 
+	<tbody><tr>
+
+		<!-- Header -->
+		<td id="header" colspan="2">
+		
+		<div id="menu1"><ul id="rmenu2" class="clearfix rMenu-hor rMenu">
+<li class="page_item"><a href="http://ginstrom.com/scribbles/" title="The GITS Blog">Home</a></li>
+<li><a href="http://ginstrom.com/scribbles/about-2/">About</a></li>
+<li><a href="http://ginstrom.com/scribbles/developer-cv/">Developer CV</a></li>
+<li><a href="http://ginstrom.com/scribbles/fiction/">Fiction</a>
+<ul class="children">
+	<li><a href="http://ginstrom.com/scribbles/fiction/intellectual-property-a-short-story/">Intellectual Property – A Short Story</a></li>
+	<li><a href="http://ginstrom.com/scribbles/fiction/client-education/">Client education: a tragedy in one act</a></li>
+</ul>
+</li>
+</ul></div>
+<table id="logoarea" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td valign="middle" class="logoarea-logo"><a href="http://ginstrom.com/scribbles/"><img class="logo" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/logo.gif" alt="The GITS Blog"></a></td><td valign="middle" class="logoarea-title"><h1 class="blogtitle"><a href="http://ginstrom.com/scribbles/">The GITS Blog</a></h1><p class="tagline">Random scribbling about programming, translation, and Japan</p></td><td class="feed-icons" valign="middle" align="right"><div class="clearfix rss-box"><a class="comments-icon" href="http://ginstrom.com/scribbles/comments/feed/" title="Subscribe to the COMMENTS feed">Comments</a><a class="posts-icon" href="http://ginstrom.com/scribbles/feed/" title="Subscribe to the POSTS feed">Posts</a></div></td></tr></tbody></table><div class="horbar1">&nbsp;</div><div class="horbar2">&nbsp;</div><div id="menu2"><ul id="rmenu" class="clearfix rMenu-hor rMenu">
+	<li><a href="http://ginstrom.com/scribbles/category/uncategorized/">Uncategorized</a>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/ijet/">IJET</a>
+</li>
+	<li class="rMenu-expand cat-item-4"><a href="http://ginstrom.com/scribbles/category/japan/">Japan</a>
+ <ul class="rMenu-ver">
+	<li><a href="http://ginstrom.com/scribbles/category/japan/japanese-japan/">Japanese</a>
+</li>
+</ul>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/language/">language</a>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/localization/">localization</a>
+</li>
+	<li class="rMenu-expand cat-item-8"><a href="http://ginstrom.com/scribbles/category/programming/">programming</a>
+ <ul class="rMenu-ver">
+	<li><a href="http://ginstrom.com/scribbles/category/programming/python/">python</a>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/programming/c/">C</a>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/programming/cpp/">c++</a>
+</li>
+</ul>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/silly/">silly</a>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/software/">software</a>
+</li>
+	<li class="rMenu-expand cat-item-12"><a href="http://ginstrom.com/scribbles/category/translation/">translation</a>
+ <ul class="rMenu-ver">
+	<li><a href="http://ginstrom.com/scribbles/category/translation/freelancing/">freelancing</a>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/translation/technology/">technology</a>
+</li>
+</ul>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/blog/">Blog</a>
+</li>
+	<li><a href="http://ginstrom.com/scribbles/category/hardware/">hardware</a>
+</li>
+</ul></div>
+
+		</td>
+		<!-- / Header -->
+
+	</tr>
+
+	<!-- Main Body -->	
+	<tr>
+
+		
+
+		<!-- Main Column -->
+		<td id="middle">
+			
+			
+	
+	 
+
+		<div class="navigation-top">
+			<div class="older">« <a href="http://ginstrom.com/scribbles/2010/04/10/translator-bait-and-switch/" rel="next">Translator bait and switch</a> &nbsp;</div><div class="newer">&nbsp; <a href="http://ginstrom.com/scribbles/2010/03/04/experts-needed/" rel="prev">Experts Needed</a> »</div>
+			<div class="clearboth"></div>
+			</div>					
+
+					
+		<div class="post">
+								
+					
+		
+
+						
+		<!-- Post Headline -->					
+		<div class="post-headline">	
+		<h2>Simple Ajax with cherrypy and jQuery		</h2>
+		</div>
+
+						
+						
+		
+
+						
+		<!-- Post Body Copy -->				
+		<div class="post-bodycopy clearfix">
+		<p>All the cool kids these days are putting Ajax into their web applications. Ajax is great for when you want to update data on a page without reloading the entire page. Most of the Ajax tutorials use PHP, so I want to show here how easy it is to do Ajax with <a href="http://www.cherrypy.org/">cherrpy</a>.</p>
+<p>Ajax stands for "asynchronous JavaScript and XML," but these days <a href="http://www.json.org/">json</a> is often used as a lighter-weight alternative to XML. In this tutorial, I'm therefore going to show how to use the python <a href="http://pypi.python.org/pypi/simplejson/">simplejson</a> library to enable communication between python and JavaScript using json.</p>
+<p>What you will need for this tutorial:</p>
+<ul>
+<li><a href="http://www.cherrypy.org/">cherrpy</a></li>
+<li><a href="http://pypi.python.org/pypi/simplejson/">simplejson</a></li>
+<li><a href="http://jquery.com/">jQuery</a></li>
+<li>The <a href="http://ginstrom.com/code/ajax_cherrypy_sample.zip">sample project</a></li>
+</ul>
+<p>You can get cherrypy and simplejson from pypi via easy_install; there's a copy of jQuery in my <a href="http://ginstrom.com/code/ajax_cherrypy_sample.zip">sample project</a>. The sample project consists of three files, in the following structure:</p>
+<pre>ajax_app.py
+media/
+  + jquery-1.4.2.min.js
+  | index.html
+</pre>
+<p>First, I'll show the HTML file:</p>
+<div class="dean_ch" style="white-space: wrap;">
+&lt;html&gt;<br>
+&lt;head&gt;<br>
+&nbsp; &nbsp; &lt;title&gt;AJAX with jQuery and cherrypy&lt;/title&gt;<br>
+&nbsp; &nbsp; &lt;script type="text/javascript" src="/media/jquery-1.4.2.min.js"&gt;&lt;/script&gt;<br>
+&lt;script type="text/javascript"&gt;<br>
+&nbsp; &nbsp; $(function() {<br>
+&nbsp; &nbsp; // When the testform is submitted…<br>
+&nbsp; &nbsp; $("#testform").submit(function() {<br>
+&nbsp; &nbsp; &nbsp; &nbsp; // post the form values via AJAX…<br>
+&nbsp; &nbsp; &nbsp; &nbsp; var postdata = {name: $("#name").val()} ;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; $.post('/submit', postdata, function(data) {<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // and set the title with the result<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $("#title").html(data['title']) ;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;});<br>
+&nbsp; &nbsp; &nbsp; &nbsp; return false ;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; });<br>
+&nbsp; &nbsp; });<br>
+&lt;/script&gt;<br>
+&lt;/head&gt;<br>
+&nbsp; &nbsp; &lt;body&gt;<br>
+&nbsp; &nbsp; &lt;h1 id="title"&gt;What's your name?&lt;/h1&gt;<p></p>
+<p>&nbsp; &nbsp; &lt;form id="testform" action="#" method="post"&gt;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &lt;p&gt;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &lt;label for="name"&gt;Name:&lt;/label&gt;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &lt;input type="text" id="name" /&gt; &lt;br /&gt;</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &lt;input type="submit" value="Set" /&gt;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &lt;/p&gt;<br>
+&nbsp; &nbsp; &lt;/form&gt;<br>
+&nbsp; &nbsp; &lt;/body&gt;<br>
+&lt;/html&gt;</p></div>
+<p>Let's see what this is doing. In the body, you've got a title tag, and bog standard HTML form, which asks for a name.</p>
+<p>In the head, you've got an include to the jQuery library, and the following JavaScript code:</p>
+<div class="dean_ch" style="white-space: wrap;">
+&nbsp; &nbsp; $<span class="br0">(</span><span class="kw2">function</span><span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span><br>
+&nbsp; &nbsp; <span class="co1">// When the testform is submitted…</span><br>
+&nbsp; &nbsp; $<span class="br0">(</span><span class="st0">"#testform"</span><span class="br0">)</span>.<span class="me1">submit</span><span class="br0">(</span><span class="kw2">function</span><span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="co1">// post the form values via AJAX…</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw2">var</span> postdata = <span class="br0">{</span><span class="kw3">name</span>: $<span class="br0">(</span><span class="st0">"#name"</span><span class="br0">)</span>.<span class="me1">val</span><span class="br0">(</span><span class="br0">)</span><span class="br0">}</span> ;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; $.<span class="me1">post</span><span class="br0">(</span><span class="st0">'/submit'</span>, postdata, <span class="kw2">function</span><span class="br0">(</span>data<span class="br0">)</span> <span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1">// and set the title with the result</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $<span class="br0">(</span><span class="st0">"#title"</span><span class="br0">)</span>.<span class="me1">html</span><span class="br0">(</span>data<span class="br0">[</span><span class="st0">'title'</span><span class="br0">]</span><span class="br0">)</span> ;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="br0">}</span><span class="br0">)</span>;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">return</span> <span class="kw2">false</span> ;<br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">}</span><span class="br0">)</span>;<br>
+&nbsp; &nbsp; <span class="br0">}</span><span class="br0">)</span>;</div>
+<p>The initial <code> $(function() </code> statement is a jQuery construct that says, "When the page loads, execute this anonymous function." That function then creates a callback for the submit event of the element with id "testform" (the form). When the form is submitted, the jQuery <code>post</code> function is executed, which is where the magic happens.</p>
+<p><a href="http://api.jquery.com/jQuery.post/">jQuery.post</a> is an Ajax method. The first argument is the URL to post to ("/submit"); the second argument is the data to send in the post (the "name" value from the form); and the third argument is the callback to call with the data we receive from the post.</p>
+<p>The function then takes this data, and uses its "title" element to update the title of the page.</p>
+<p>Next, here's the ajax_app.py file:</p>
+<div class="dean_ch" style="white-space: wrap;">
+<span class="kw1">import</span> cherrypy<br>
+<span class="kw1">import</span> <span class="kw3">webbrowser</span><br>
+<span class="kw1">import</span> <span class="kw3">os</span><br>
+<span class="kw1">import</span> simplejson<br>
+<span class="kw1">import</span> <span class="kw3">sys</span><p></p>
+<p>MEDIA_DIR = <span class="kw3">os</span>.<span class="me1">path</span>.<span class="me1">join</span><span class="br0">(</span><span class="kw3">os</span>.<span class="me1">path</span>.<span class="me1">abspath</span><span class="br0">(</span><span class="st0">"."</span><span class="br0">)</span>, u<span class="st0">"media"</span><span class="br0">)</span></p>
+<p><span class="kw1">class</span> AjaxApp<span class="br0">(</span><span class="kw2">object</span><span class="br0">)</span>:<br>
+&nbsp; &nbsp; @cherrypy.<span class="me1">expose</span><br>
+&nbsp; &nbsp; <span class="kw1">def</span> index<span class="br0">(</span><span class="kw2">self</span><span class="br0">)</span>:<br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">return</span> <span class="kw2">open</span><span class="br0">(</span><span class="kw3">os</span>.<span class="me1">path</span>.<span class="me1">join</span><span class="br0">(</span>MEDIA_DIR, u<span class="st0">'index.html'</span><span class="br0">)</span><span class="br0">)</span></p>
+<p>&nbsp; &nbsp; @cherrypy.<span class="me1">expose</span><br>
+&nbsp; &nbsp; <span class="kw1">def</span> submit<span class="br0">(</span><span class="kw2">self</span>, name<span class="br0">)</span>:<br>
+&nbsp; &nbsp; &nbsp; &nbsp; cherrypy.<span class="me1">response</span>.<span class="me1">headers</span><span class="br0">[</span><span class="st0">'Content-Type'</span><span class="br0">]</span> = <span class="st0">'application/json'</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">return</span> simplejson.<span class="me1">dumps</span><span class="br0">(</span><span class="kw2">dict</span><span class="br0">(</span>title=<span class="st0">"Hello, %s"</span> % name<span class="br0">)</span><span class="br0">)</span></p>
+<p>config = <span class="br0">{</span><span class="st0">'/media'</span>:<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">{</span><span class="st0">'tools.staticdir.on'</span>: <span class="kw2">True</span>,<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="st0">'tools.staticdir.dir'</span>: MEDIA_DIR,<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">}</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">}</span></p>
+<p><span class="kw1">def</span> open_page<span class="br0">(</span><span class="br0">)</span>:<br>
+&nbsp; &nbsp; <span class="kw3">webbrowser</span>.<span class="kw2">open</span><span class="br0">(</span><span class="st0">"http://127.0.0.1:8080/"</span><span class="br0">)</span><br>
+cherrypy.<span class="me1">engine</span>.<span class="me1">subscribe</span><span class="br0">(</span><span class="st0">'start'</span>, open_page<span class="br0">)</span><br>
+cherrypy.<span class="me1">tree</span>.<span class="me1">mount</span><span class="br0">(</span>AjaxApp<span class="br0">(</span><span class="br0">)</span>, <span class="st0">'/'</span>, config=config<span class="br0">)</span><br>
+cherrypy.<span class="me1">engine</span>.<span class="me1">start</span><span class="br0">(</span><span class="br0">)</span></p></div>
+<p>First, the <code>AjaxApp</code> class is our application. It's pretty simple, having only two methods: <code>index</code> and <code>submit</code>. </p>
+<p>When the index method is called, the app opens the index file and returns it. </p>
+<p>The submit method is our Ajax method; when it is called with the form data, we use the information to create a new title, and pass that back as json data using <a href="http://svn.red-bean.com/bob/simplejson/tags/simplejson-1.3/docs/module-simplejson.html#dumps">simplejson.dumps</a>. The JavaScript function that called this method can then use the data to update the page content.</p>
+<p>This little piece of code is a convenience for development; when you run the cherrpy app, it loads the index page in your web browser.</p>
+<div class="dean_ch" style="white-space: wrap;">
+<span class="kw1">def</span> open_page<span class="br0">(</span><span class="br0">)</span>:<br>
+&nbsp; &nbsp; <span class="kw3">webbrowser</span>.<span class="kw2">open</span><span class="br0">(</span><span class="st0">"http://127.0.0.1:8080/"</span><span class="br0">)</span><br>
+cherrypy.<span class="me1">engine</span>.<span class="me1">subscribe</span><span class="br0">(</span><span class="st0">'start'</span>, open_page<span class="br0">)</span></div>
+<p>Finally, the last two lines mount the app, and start up the server. The "config" dict tells cherrpy to serve up static files from the "media" dir in the script's home directory.</p>
+<p>If you download the sample project, unzip it, and run ajax_app.py, you should get the following screen (shown here with the name filled in):</p>
+<div id="attachment_1506" class="wp-caption alignnone" style="width: 310px"><a href="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/screen1.png"><img src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/screen1.png" alt="Ajax app -- step1" title="ajax_app1" width="300" height="175" class="size-full wp-image-1506"></a><p class="wp-caption-text">Ajax app -- step 1</p></div>
+<p>Here it is after filling in the name and clicking <strong>Set</strong>:</p>
+<div id="attachment_1507" class="wp-caption alignnone" style="width: 310px"><a href="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/screen2.png"><img src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/screen2.png" alt="Ajax app -- step 2" title="ajax_app2" width="300" height="175" class="alignnone size-full wp-image-1507"></a><p class="wp-caption-text">Ajax app -- step 2</p></div>
+<h3>When to use Ajax</h3>
+<p>Ajax is useful when you want to update the page content without reloading the entire page. This is useful for CRUD apps when you want to do things like edit items in place, delete items, or add items.</p>
+<h3>When not to use Ajax</h3>
+<p>Since Ajax actions don't correspond to URIs, you can't bookmark Ajax actions, send links to friends, or use the back and forward buttons to navigate like in a normal website.</p>
+<p>For this reason, avoid Ajax if you want certain application states to be navigable as URIs. For example, if you have a calendar application, and use Ajax to show all the data, the user won't have any way to bookmark an event on December 12th, 2011. Likewise, if you use an Ajax data grid to show tables of data, you won't be able to email your data views to your colleagues.</p>
+<p>One middle way is to offer a "permalink" for each Ajax view, which allows for bookmarking, sending links, etc. This still breaks the back-button functionality, but may be worth the trade-off.</p>
+		</div>	
+
+
+						
+		
+						
+						
+											
+						
+						
+		<div class="post-footer">March 7th, 2010 |  Category: <a href="http://ginstrom.com/scribbles/category/programming/">programming</a>, <a href="http://ginstrom.com/scribbles/category/programming/python/">python</a> | 
+			<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/#comments">13 comments</a></div>
+						
+						
+		</div><!-- / Post -->
+								
+
+								
+		
+					
+					
+		<!-- You can start editing below: -->
+
+	
+	<h3 id="comments">13 comments to Simple Ajax with cherrypy and jQuery	</h3>
+	
+	
+		
+
+						
+				
+	<!-- Comment List -->
+	<ul class="commentlist">
+		
+		<!-- Do this for every comment -->
+				<li class="pingback even thread-even depth-1 clearfix" id="comment-15958">
+				<div id="div-comment-15958" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+				<span class="authorname"><a href="http://www.yoobz.com/2010/03/07/the-gits-blog-%c2%bb-simple-ajax-with-cherrypy-and-jquery/" rel="external " class="url">The GITS Blog » Simple Ajax with cherrypy and jQuery | Yoobz</a></span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-15958">
+		March 8th, 2010 at 1:28 am		</a>				</div>
+		<p>[...] post: The GITS Blog » Simple Ajax with cherrypy and jQuery  Posteado por: yoobz on March 7, [...]</p>
+				</div>
+		</li>
+		<li class="comment odd alt thread-odd thread-alt depth-1 clearfix" id="comment-17515">
+				<div id="div-comment-17515" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/2ed1d76ac731a2ae57bca774290759d8" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname"><a href="http://www.boschmans.net/" rel="external " class="url">Alex Boschmans</a></span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-17515">
+		April 20th, 2010 at 5:28 am		</a>				</div>
+		<p>Hey there, thanks for the post, this is just what I was looking for ! Now off to see if I can use this functionality together with openflashcharts… <img src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/icon_smile.gif" alt=":-)" class="wp-smiley"> </p>
+				</div>
+		</li>
+		<li class="comment even thread-even depth-1 clearfix" id="comment-25203">
+				<div id="div-comment-25203" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/30de15a5acff7625c7ea378c02767564" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname"><a href="http://scientificmarketer.com/" rel="external " class="url">njr</a></span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-25203">
+		August 26th, 2010 at 10:27 pm		</a>				</div>
+		<p>This is great: very simple and works exactly as advertised (not as common as we’d all like!)</p>
+<p>Thanks for the post.</p>
+				</div>
+		</li>
+		<li class="comment odd alt thread-odd thread-alt depth-1 clearfix" id="comment-56128">
+				<div id="div-comment-56128" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/dcfa478222b6bc950f57f91a2bb68fdf" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname">Jean</span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-56128">
+		February 22nd, 2011 at 8:26 am		</a>				</div>
+		<p>Excellent post. How can I shut down cherrypy by closing the brower?</p>
+				</div>
+		</li>
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1 clearfix" id="comment-56140">
+				<div id="div-comment-56140" class="clearfix comment-container
+		 bypostauthor">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/f932f014eda607b8d2424407f82f7528" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname"><a href="http://ginstrom.com/" rel="external " class="url">Ryan Ginstrom</a></span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-56140">
+		February 22nd, 2011 at 9:27 am		</a>				</div>
+		<p>@Jean</p>
+<p>Unfortunately, you can’t. This is because the process isn’t running in the browser; the browser is accessing the cherrpy server, which is what browsers do. You can add a link on your website that will shut down the server (e.g. “Exit Server”), and then have that URL handler shut down cherrypy.</p>
+				</div>
+		</li>
+		<li class="comment odd alt thread-odd thread-alt depth-1 clearfix" id="comment-74674">
+				<div id="div-comment-74674" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/7007af96cbd4ebd555461690cf4be2e2" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname">Nicholas Key</span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-74674">
+		May 16th, 2011 at 9:57 am		</a>				</div>
+		<p>Hey Ryan,</p>
+<p>I tried to access the page via another IP address by doing “ifconfig | grep inet” (eg, <a href="http://10.1.5.221:8080/">http://10.1.5.221:8080</a>) instead of using 127.0.0.1 </p>
+<p>But I’m not able to do a GET from 10.1.5.221:8080</p>
+<p>Thoughts?</p>
+				</div>
+		</li>
+		<li class="comment even thread-even depth-1 clearfix" id="comment-87741">
+				<div id="div-comment-87741" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/8b7fca92e2bf8b900eb5e7d1b548930a" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname"><a href="http://bleachbit.sourceforge.net/" rel="external " class="url">Andrew Ziem</a></span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-87741">
+		July 6th, 2011 at 11:23 am		</a>				</div>
+		<p>Nicholas: You need to modify the config like this</p>
+<p>‘global’: {<br>
+            ‘server.socket_port’ : 8080,<br>
+            ‘server.socket_host’: “0.0.0.0″<br>
+}</p>
+				</div>
+		</li>
+		<li class="comment odd alt thread-odd thread-alt depth-1 clearfix" id="comment-139335">
+				<div id="div-comment-139335" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/745b807bd880ffab12e5038bfc70e701" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname">Adnan</span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-139335">
+		November 17th, 2011 at 11:17 pm		</a>				</div>
+		<p>Hi..<br>
+I am fairly new to python let alone using cherrypy so please excuse me if the the question is too dumb. I actually wanted to know how we can run other pages on the server…for example I want to navigate to some page named setting.html from index.html which ofcourse uses function from the same python script.</p>
+				</div>
+		</li>
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1 clearfix" id="comment-139352">
+				<div id="div-comment-139352" class="clearfix comment-container
+		 bypostauthor">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/f932f014eda607b8d2424407f82f7528" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname"><a href="http://ginstrom.com/" rel="external " class="url">Ryan Ginstrom</a></span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-139352">
+		November 18th, 2011 at 12:01 am		</a>				</div>
+		<p>@Adnan</p>
+<p>Yes, this is quite simple with cherrypy. You would do something like this in your Python script:</p>
+<pre class="python">class AjaxApp(object):
+    @cherrypy.expose
+    def index(self):
+        return open(os.path.join(MEDIA_DIR, u'index.html'))
+    @cherrypy.expose
+    def setting(self):
+        return open(os.path.join(MEDIA_DIR, u'setting.html'))
+</pre>
+<p>Then in your index.html file, you could add a link to “setting” in the form &lt;a href=”/setting” &gt;Settings&lt;/a&gt;</p>
+				</div>
+		</li>
+		<li class="comment odd alt thread-odd thread-alt depth-1 clearfix" id="comment-140928">
+				<div id="div-comment-140928" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/745b807bd880ffab12e5038bfc70e701" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname">Adnan</span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-140928">
+		November 21st, 2011 at 6:46 pm		</a>				</div>
+		<p>Thank you very much for the reply….but there is a new problem now…Is it possible to enable it to be able to run ANY page on cherrypy without having to difine it in the script???….like in apache we just place the html files in htdocs…is it possible to make a directory like this for cherrypy??</p>
+				</div>
+		</li>
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1 clearfix" id="comment-141103">
+				<div id="div-comment-141103" class="clearfix comment-container
+		 bypostauthor">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/f932f014eda607b8d2424407f82f7528" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname"><a href="http://ginstrom.com/" rel="external " class="url">Ryan Ginstrom</a></span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-141103">
+		November 22nd, 2011 at 2:24 am		</a>				</div>
+		<p>@Adnan</p>
+<p>Yes, it is quite simple to serve static content in cherrypy. You can serve directories, file objects (e.g., dynamically created StringIO instances), and so on. <a href="http://docs.cherrypy.org/stable/refman/lib/static.html">Here is the documentation.</a></p>
+<p>However, I will note that on a high-volume site, the best practice is to put static files on another server behind apache et al, or at least on the same server but behind apache, etc.</p>
+<p>Finally, you can get very dynamic with cherrpy by letting part of the URL be an argument to your Python method.</p>
+<p>For example, you can write a method like this:</p>
+<p><code><br>
+    def photos(self, name):<br>
+        # serve the photo named `name`<br>
+</code></p>
+<p>And then have URLs like:</p>
+<p>/photos/sandy<br>
+/photos/pat<br>
+/photos/andy</p>
+<p>And so on.</p>
+				</div>
+		</li>
+		<li class="comment odd alt thread-odd thread-alt depth-1 clearfix" id="comment-141555">
+				<div id="div-comment-141555" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/745b807bd880ffab12e5038bfc70e701" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname">Adnan</span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-141555">
+		November 23rd, 2011 at 12:43 am		</a>				</div>
+		<p>aah!! This is exactly wht I wanted… Thanks very much!</p>
+				</div>
+		</li>
+		<li class="comment even thread-even depth-1 clearfix" id="comment-209491">
+				<div id="div-comment-209491" class="clearfix comment-container
+		">
+				<div class="comment-author vcard">
+		<img alt="" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/f116441c62b46187e17c80ad6606ae44" class="avatar avatar-55 photo" height="55" width="55">		<span class="authorname">ZhangLihua</span>
+		</div>
+		<div class="comment-meta commentmetadata">
+		<a href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/comment-page-1/#comment-209491">
+		March 3rd, 2012 at 11:41 pm		</a>				</div>
+		<p>Hey Ryan, thanks very much for the post.<br>
+Unfortunately, though I did exactly what you have post, I just can’t get the right ajax result. after filling in the name and clicking Set, my page did not change at all.<br>
+I’m so confused about ajax with cherrypy. could you help me..thanks so much.</p>
+				</div>
+		</li>
+	
+	</ul>
+	<!-- / Comment List -->
+	
+
+						
+
+
+
+
+
+			
+		<!-- Comment Form -->
+		<div id="respond">
+		
+		<h3 class="reply">Leave a Reply</h3>
+	
+		<div id="cancel-comment-reply">
+		<a rel="nofollow" id="cancel-comment-reply-link" href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/#respond" style="display:none;">Cancel</a>		</div>
+	
+		<form action="http://ginstrom.com/scribbles/wp-comments-post.php" method="post" id="commentform">
+
+						<p>
+			<input class="text author" type="text" name="author" id="author" value="" size="30" tabindex="1">&nbsp;
+			<label for="author"> <strong>Name </strong>(required)</label>
+			</p>
+			<p>
+			<input class="text email" type="text" name="email" id="email" value="" size="30" tabindex="2">&nbsp;
+			<label for="email"> <strong>Mail</strong> (will not be published) (required)</label>
+			</p>
+			<p>
+			<input class="text url" type="text" name="url" id="url" value="" size="30" tabindex="3">&nbsp;
+			<label for="url"> Website</label>
+			</p>
+				
+		<!-- Display Quicktags or allowed XHTML Tags -->
+				<p class="thesetags clearfix">You can use <a class="xhtmltags" href="http://ginstrom.com/scribbles/2010/03/07/simple-ajax-with-cherrypy-and-jquery/#" onclick="return false;">these HTML tags</a></p>
+		<div class="xhtml-tags"><p><code>&lt;a href="" title=""&gt; &lt;abbr title=""&gt; &lt;acronym title=""&gt; &lt;b&gt; &lt;blockquote cite=""&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=""&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=""&gt; &lt;strike&gt; &lt;strong&gt; </code></p></div>
+			
+		<!-- Comment Textarea -->
+		<p><textarea name="comment" id="comment" rows="10" cols="10" tabindex="4"></textarea></p>
+		<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="f7ba7fed31"></p>		
+		<!-- Submit -->
+		<p><input name="submit" type="submit" class="button" id="submit" tabindex="5" value="Submit Comment">
+		<input type="hidden" name="comment_post_ID" value="1503" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+		</p>
+		
+		</form>
+		</div><!-- / respond -->
+		<!-- / Comment Form -->
+
+		<!-- / If Login is not required, or User is logged in -->
+	
+<!-- If comments are open -->
+
+					
+					
+						
+
+	
+	 
+				
+
+				
+				
+
+			
+		</td>
+		<!-- / Main Column -->	
+
+				<!-- Right Sidebar -->
+		<td id="right">
+
+			<div id="search" class="widget widget_search"><form method="get" class="searchform" action="http://ginstrom.com/scribbles/">
+<table class="searchform" cellpadding="0" cellspacing="0" border="0">
+<tbody><tr>
+<td class="searchfield">
+<input type="text" class="text inputblur" value="" name="s">
+</td>
+<td class="searchbutton">
+<input name="submit" value="Search" type="image" src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/magnifier2-gray.gif" style="display: block; border:none; padding: 0 0 0 5px; margin: 0;">
+</td>
+</tr></tbody></table>
+</form></div>		<div id="text-408847302" class="widget widget_text">			<div class="widget-title"><h3>RSS Feeds</h3></div><div class="widget-content">			<div class="textwidget"><img src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/rss.png" style="margin-bottom: -5px;" alt="RSS feed"> <a href="http://ginstrom.com/scribbles/feed/" title="Syndicate this site using RSS"><abbr title="Really Simple Syndication">All</abbr></a>
+<br>
+<img src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/rss.png" style="margin-bottom: -5px;" alt="Python RSS feed"> <a href="http://ginstrom.com/scribbles/category/python/feed/" title="Python RSS feed">Python</a>
+<br>
+<img src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/rss.png" style="margin-bottom: -5px;" alt="Programming RSS feed"> <a href="http://ginstrom.com/scribbles/category/programming/feed/" title="Programming RSS feed">Programming</a>
+<br>
+<img src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/rss.png" style="margin-bottom: -5px;" alt="Translation RSS feed"> <a href="http://ginstrom.com/scribbles/category/translation/feed/" title="Translation RSS feed">Translation</a></div>
+		</div></div><div id="calendar" class="widget widget_calendar"><div id="calendar_wrap"><table id="wp-calendar">
+	<caption>March 2010</caption>
+	<thead>
+	<tr>
+		<th scope="col" title="Monday">M</th>
+		<th scope="col" title="Tuesday">T</th>
+		<th scope="col" title="Wednesday">W</th>
+		<th scope="col" title="Thursday">T</th>
+		<th scope="col" title="Friday">F</th>
+		<th scope="col" title="Saturday">S</th>
+		<th scope="col" title="Sunday">S</th>
+	</tr>
+	</thead>
+
+	<tfoot>
+	<tr>
+		<td colspan="3" id="prev"><a href="http://ginstrom.com/scribbles/2010/02/" title="View posts for February 2010">« Feb</a></td>
+		<td class="pad">&nbsp;</td>
+		<td colspan="3" id="next"><a href="http://ginstrom.com/scribbles/2010/04/" title="View posts for April 2010">Apr »</a></td>
+	</tr>
+	</tfoot>
+
+	<tbody>
+	<tr><td>1</td><td>2</td><td>3</td><td><a href="http://ginstrom.com/scribbles/2010/03/04/" title="Experts Needed">4</a></td><td>5</td><td>6</td><td><a href="http://ginstrom.com/scribbles/2010/03/07/" title="Simple Ajax with cherrypy and jQuery">7</a></td>
+	</tr>
+	<tr>
+		<td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td>
+	</tr>
+	<tr>
+		<td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td>
+	</tr>
+	<tr>
+		<td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td>
+	</tr>
+	<tr>
+		<td>29</td><td>30</td><td>31</td>
+		<td class="pad" colspan="4">&nbsp;</td>
+	</tr>
+	</tbody>
+	</table></div></div>		<div id="recent-posts-2" class="widget widget_recent_entries">		<div class="widget-title"><h3>Recent</h3></div><div class="widget-content">		<ul>
+				<li><a href="http://ginstrom.com/scribbles/2012/05/10/continuous-integration-in-python-using-watchdog/" title="Continuous integration in python using watchdog">Continuous integration in python using watchdog</a></li>
+				<li><a href="http://ginstrom.com/scribbles/2012/04/16/the-importance-of-appearing-confident/" title="The importance of appearing confident">The importance of appearing confident</a></li>
+				<li><a href="http://ginstrom.com/scribbles/2011/04/20/life-in-america/" title="Life in America">Life in America</a></li>
+				<li><a href="http://ginstrom.com/scribbles/2011/02/20/version-2-1-of-count-anything-released/" title="Version 2.1 of Count Anything released">Version 2.1 of Count Anything released</a></li>
+				<li><a href="http://ginstrom.com/scribbles/2011/02/14/going-to-work-for-the-short-italian-man/" title="Going to work for the (short, Italian) Man">Going to work for the (short, Italian) Man</a></li>
+				</ul>
+		</div></div><div id="linkcat-2" class="widget widget_links"><div class="widget-title"><h3>Blogroll</h3></div><div class="widget-content">
+	<ul class="xoxo blogroll">
+<li><a href="http://aboutranslation.blogspot.com/">About Translation</a></li>
+<li><a href="http://bettertechenglish.com/" title="Japanese-language website of Ryan Ginstrom">BetterTechEnglish.com</a></li>
+<li><a href="http://felix-cat.com/blog/" title="Blog for the Felix CAT tool">Felix Blog</a></li>
+<li><a href="http://maskedtranslator.blogspot.com/">Masked Translator</a></li>
+<li><a href="http://translationmusings.com/">Musing from an Overworked Translator</a></li>
+<li><a href="http://www.swet.jp/index.php/weblog/" title="Blog of the Society of Writers, Editors, and Translators">SWET Blog</a></li>
+<li><a href="http://thoughtsontranslation.com/">Thoughts on Translation</a></li>
+<li><a href="http://translationtimes.blogspot.com/">Translation Times</a></li>
+<li><a href="http://simmer-lossner.blogspot.com/">Translation Tribulations</a></li>
+<li><a href="http://honyakusha.blogspot.com/">Translator’s Tools</a></li>
+
+	</ul>
+</div></div>
+		<div id="text-408845271" class="widget widget_text">			<div class="widget-title"><h3>My Links</h3></div><div class="widget-content">			<div class="textwidget"><ul class="xoxo blogroll">
+<li><a href="http://ginstrom.com/">GITS Home</a></li>
+<li><a href="http://felix-cat.com/" title="Felix Computer Assisted Translation (CAT) Tool">Felix CAT Tool</a></li>
+</ul></div>
+		</div></div><div id="archives-2" class="widget widget_archive"><div class="widget-title"><h3>Archives</h3></div><div class="widget-content">		<select name="archive-dropdown" onchange="document.location.href=this.options[this.selectedIndex].value;"> <option value="">Select Month</option> 	<option value="http://ginstrom.com/scribbles/2012/05/"> May 2012 &nbsp;(1)</option>
+	<option value="http://ginstrom.com/scribbles/2012/04/"> April 2012 &nbsp;(1)</option>
+	<option value="http://ginstrom.com/scribbles/2011/04/"> April 2011 &nbsp;(1)</option>
+	<option value="http://ginstrom.com/scribbles/2011/02/"> February 2011 &nbsp;(2)</option>
+	<option value="http://ginstrom.com/scribbles/2011/01/"> January 2011 &nbsp;(1)</option>
+	<option value="http://ginstrom.com/scribbles/2010/12/"> December 2010 &nbsp;(5)</option>
+	<option value="http://ginstrom.com/scribbles/2010/10/"> October 2010 &nbsp;(5)</option>
+	<option value="http://ginstrom.com/scribbles/2010/08/"> August 2010 &nbsp;(1)</option>
+	<option value="http://ginstrom.com/scribbles/2010/07/"> July 2010 &nbsp;(3)</option>
+	<option value="http://ginstrom.com/scribbles/2010/06/"> June 2010 &nbsp;(4)</option>
+	<option value="http://ginstrom.com/scribbles/2010/05/"> May 2010 &nbsp;(1)</option>
+	<option value="http://ginstrom.com/scribbles/2010/04/"> April 2010 &nbsp;(4)</option>
+	<option value="http://ginstrom.com/scribbles/2010/03/"> March 2010 &nbsp;(2)</option>
+	<option value="http://ginstrom.com/scribbles/2010/02/"> February 2010 &nbsp;(2)</option>
+	<option value="http://ginstrom.com/scribbles/2010/01/"> January 2010 &nbsp;(3)</option>
+	<option value="http://ginstrom.com/scribbles/2009/12/"> December 2009 &nbsp;(4)</option>
+	<option value="http://ginstrom.com/scribbles/2009/11/"> November 2009 &nbsp;(6)</option>
+	<option value="http://ginstrom.com/scribbles/2009/10/"> October 2009 &nbsp;(4)</option>
+	<option value="http://ginstrom.com/scribbles/2009/09/"> September 2009 &nbsp;(5)</option>
+	<option value="http://ginstrom.com/scribbles/2009/08/"> August 2009 &nbsp;(3)</option>
+	<option value="http://ginstrom.com/scribbles/2009/07/"> July 2009 &nbsp;(4)</option>
+	<option value="http://ginstrom.com/scribbles/2009/06/"> June 2009 &nbsp;(8)</option>
+	<option value="http://ginstrom.com/scribbles/2009/05/"> May 2009 &nbsp;(8)</option>
+	<option value="http://ginstrom.com/scribbles/2009/04/"> April 2009 &nbsp;(13)</option>
+	<option value="http://ginstrom.com/scribbles/2009/03/"> March 2009 &nbsp;(8)</option>
+	<option value="http://ginstrom.com/scribbles/2009/02/"> February 2009 &nbsp;(3)</option>
+	<option value="http://ginstrom.com/scribbles/2009/01/"> January 2009 &nbsp;(8)</option>
+	<option value="http://ginstrom.com/scribbles/2008/12/"> December 2008 &nbsp;(7)</option>
+	<option value="http://ginstrom.com/scribbles/2008/11/"> November 2008 &nbsp;(9)</option>
+	<option value="http://ginstrom.com/scribbles/2008/10/"> October 2008 &nbsp;(13)</option>
+	<option value="http://ginstrom.com/scribbles/2008/09/"> September 2008 &nbsp;(15)</option>
+	<option value="http://ginstrom.com/scribbles/2008/08/"> August 2008 &nbsp;(8)</option>
+	<option value="http://ginstrom.com/scribbles/2008/07/"> July 2008 &nbsp;(7)</option>
+	<option value="http://ginstrom.com/scribbles/2008/06/"> June 2008 &nbsp;(6)</option>
+	<option value="http://ginstrom.com/scribbles/2008/05/"> May 2008 &nbsp;(11)</option>
+	<option value="http://ginstrom.com/scribbles/2008/04/"> April 2008 &nbsp;(1)</option>
+	<option value="http://ginstrom.com/scribbles/2008/03/"> March 2008 &nbsp;(6)</option>
+	<option value="http://ginstrom.com/scribbles/2008/02/"> February 2008 &nbsp;(6)</option>
+	<option value="http://ginstrom.com/scribbles/2007/12/"> December 2007 &nbsp;(6)</option>
+	<option value="http://ginstrom.com/scribbles/2007/11/"> November 2007 &nbsp;(12)</option>
+	<option value="http://ginstrom.com/scribbles/2007/10/"> October 2007 &nbsp;(18)</option>
+	<option value="http://ginstrom.com/scribbles/2007/09/"> September 2007 &nbsp;(24)</option>
+	<option value="http://ginstrom.com/scribbles/2007/08/"> August 2007 &nbsp;(2)</option>
+ </select>
+</div></div><div id="meta-2" class="widget widget_meta"><div class="widget-title"><h3>Meta</h3></div><div class="widget-content">			<ul>
+						<li><a href="http://ginstrom.com/scribbles/wp-login.php">Log in</a></li>
+			<li><a href="http://ginstrom.com/scribbles/feed/" title="Syndicate this site using RSS 2.0">Entries <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://ginstrom.com/scribbles/comments/feed/" title="The latest comments to all posts in RSS">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.org</a></li>
+						</ul>
+</div></div>
+		</td>
+		<!-- / Right Sidebar -->
+		
+	</tr>
+	<!-- / Main Body -->
+
+	<tr>
+
+		<!-- Footer -->
+		<td id="footer" colspan="3">	
+
+		<p>
+		Copyright © GITS under a <a rel="license" href="http://creativecommons.org/licenses/by/2.1/jp/">Creative Commons</a> license</p>
+	
+				</td>
+		<!-- / Footer -->
+		
+	</tr>
+</tbody></table><!-- / layout -->
+</div><!-- / container -->
+</div><!-- / wrapper -->
+<script src="./The GITS Blog » Simple Ajax with cherrypy and jQuery_files/urchin.js" type="text/javascript">
+</script>
+
+<script type="text/javascript">
+_uacct = "UA-2546149-1";
+urchinTracker();
+</script>
+
+
+
+<!-- Dynamic page generated in 1.207 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2012-08-13 05:13:19 -->
+</body></html>

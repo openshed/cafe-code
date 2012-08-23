@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>Open Shed Coffee Machine</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="/media/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/media/jquery-ui-1.8.22.custom.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/media/jquery-ui-1.8.22.custom.css" />
+        <script type="text/javascript">
+            function pour(val) {
+                $.post('/coffee/submit', {quantity: val}, function(d) {alert($.stringify(d))});
+                return false;
+            }
+            $(document).ready(function(){ 
+                $(".pour").addClass("fg-button ui-state-default ui-corner-all ui-state-hover");
+            })
+                
+            /*
+            $(function() {
+                // When the testform is submitted...
+                $("#coffee").submit(function() {
+                    // post the form values via AJAX...
+                    $.post('/coffee/submit', {name: $("#name").val()}, function(data) {
+                            alert(form.value);
+                           });
+                    return false ;
+                    });
+            });
+            */
+	</script>
+</head>
+	<body>
+	<h1 id="title">Coffee dispenser</h1>
+
+        <p>
+        <a href="#" class="pour" onclick="pour(85)">Single Shot</a>
+        <a href="#" class="pour" onclick="pour(170)">Double Shot</a>
+        <br />
+        <a href="#" class="pour" onclick="pour(-1)">Pour</a>
+        <a href="#" class="pour" onclick="pour(0)">Stop</a>
+        </p>
+        
+        <p>
+            <a href="/">Back to menu</a>
+        </p>
+	</body>
+</html>

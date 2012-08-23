@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>Open Shed Coffee Machine</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="/media/jquery-ui-1.8.22.custom.css" />
+        <script type="text/javascript">
+            function pour(val) {
+                $.post('/coffee/submit', {quantity: val} );
+                return false;
+            }
+                
+	</script>
+<script type='text/javascript' src='http://code.jquery.com/jquery-git.js'></script>
+      <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+      <link rel="stylesheet" type="text/css" href="http://openshed.org/sites/all/themes/openshed/css/jquery-ui.css">
+  
+  <style type='text/css'>
+    .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    width: 176px;
+}
+
+  </style>
+
+<script src="http://malsup.github.com/jquery.form.js"></script>
+<script type='text/javascript'>//<![CDATA[ 
+
+(function($) {
+    $(document).ready(function(){
+      $(".pour").addClass("fg-button ui-state-default ui-corner-all ui-state-hover");
+      $("#till").openshed_till();
+      $("#logForm").ajaxForm(function() {
+        $("textarea#log").val('');
+      });
+    })
+    $.widget("ui.openshed_till", {
+        options: {
+            autoShow: true,
+            currentSum: []
+        },
+        _create: function() {
+            var div = $("<div />"),
+                list = $("<ul />", {
+                    "class": "ui-helper-reset ui-helper-clearfix"
+                }),
+                li = $("<li />", {
+                    "class": "ui-corner-all    ui-state-default"
+                }),
+                a = $("<a />", {
+                    href: "#",
+                    "class": "ui-calculator-button"
+                }),
+                container = div.clone().addClass("ui-calculator-container ui-corner-all ui-widget-content ui-helper-clearfix"),
+                display = $("<input type='number'/>").clone().addClass("ui-corner-all ui-widget-content ui-calculator-display").text("0").appendTo(container),
+                numberpad = div.clone().addClass("ui-calculator-numberpad").appendTo(container),
+                functionpad = div.clone().addClass("ui-calculator-functionpad").appendTo(container),
+                numberlist = list.clone().appendTo(numberpad),
+                functionlist = list.clone().appendTo(functionpad),
+                buttons = ["1 Shot ", "2 Shots ", "Milky ", "Tea ", "Cake "],
+                functions = ["pour", " pour", "-50p", "=","Next"];
+            for (var x = 0; x < buttons.length; x++) {
+                var listitem = li.clone().appendTo(numberlist),
+                    linky = a.clone().text(buttons[x]).appendTo(listitem);
+
+                linky.addClass("ui-calculator-button-wide");
+
+            }
+            for (var y = 0; y < functions.length; y++) {
+                var listitem2 = li.clone().addClass("ui-state-default").appendTo(functionlist),
+                    linky2 = a.clone().text(functions[y]).appendTo(listitem2);
+            }
+            this.element.addClass("ui-calculator ui-widget ui-helper-reset");
+            (this.options.autoShow) ? container.appendTo(this.element) : container.appendTo(this.element).hide();
+            this.element.find("li").bind({
+                mouseenter: this._addHoverState,
+                mouseleave: this._removeHoverState,
+                click: this._buttonClick
+            });
+        },
+        destroy: function() {
+            $.Widget.prototype.destroy.call(this, arguments);
+            this.element.removeClass("ui-calculator ui-widget ui-helper-reset");
+            this.element.find("li").unbind();
+            this.element.children(":first").remove();
+        },
+        disable: function() {
+            $.Widget.prototype.disable.call(this, arguments);
+            this.element.find("li").unbind();
+        },
+        enable: function() {
+            $.Widget.prototype.enable.call(this, arguments);
+            this.element.find("li").bind({
+                mouseenter: this._addHoverState,
+                mouseleave: this._removeHoverState,
+                click: this._buttonClick
+            });
+        },
+        show: function() {
+            var el = this.element.children(":first");
+            if (el.is(":hidden")) {
+                el.show();
+            }
+            this._trigger("show", null, this.element);
+        },
+        _addHoverState: function() {
+            $(this).addClass("ui-state-hover");
+        },
+        _removeHoverState: function() {
+            $(this).removeClass("ui-state-hover");
+        },
+        _buttonClick: function() {
+            var buttonText = $(this).text(),
+                display = $(".ui-calculator-display"),
+                newArray = $.ui.openshed_till.prototype.options.currentSum;
+            if (buttonText == "Milky ") {
+                $("textarea#log").val($("textarea#log").val() + "\n0.30, milky");
+                $.ui.openshed_till.prototype.options.currentSum.push("+ .30");
+                display.val("");
+                result = eval($.ui.openshed_till.prototype.options.currentSum.join("")).toFixed(2);
+                display.val(result);
+                $.ui.openshed_till.prototype.options.currentSum = [result];
+            } else if (buttonText == "1 Shot ") {
+                $("textarea#log").val($("textarea#log").val() + "\n1.50, coffee");
+                $.ui.openshed_till.prototype.options.currentSum.push("+ 1.5");
+                display.val("");
+                result = eval($.ui.openshed_till.prototype.options.currentSum.join("")).toFixed(2);
+                display.val(result);
+                $.ui.openshed_till.prototype.options.currentSum = [result];
+            } else if (buttonText == "2 Shots ") {
+                $("textarea#log").val($("textarea#log").val() + "\n2.00, strong coffee");
+                $.ui.openshed_till.prototype.options.currentSum.push("+ 2");
+                display.val("");
+                result = eval($.ui.openshed_till.prototype.options.currentSum.join("")).toFixed(2);
+                display.val(result);
+                $.ui.openshed_till.prototype.options.currentSum = [result];
+            } else if (buttonText == "Tea ") {
+                $("textarea#log").val($("textarea#log").val() + "\n1.50, cup of tea");
+                $.ui.openshed_till.prototype.options.currentSum.push("+ 1.5");
+                display.val("");
+                result = eval($.ui.openshed_till.prototype.options.currentSum.join("")).toFixed(2);
+                display.val(result);
+                $.ui.openshed_till.prototype.options.currentSum = [result];
+            } else if (buttonText == "Cake ") {
+                $("textarea#log").val($("textarea#log").val() + "\n1.50, Cake");
+                $.ui.openshed_till.prototype.options.currentSum.push("+ 1.5");
+                display.val("");
+                result = eval($.ui.openshed_till.prototype.options.currentSum.join("")).toFixed(2);
+                display.val(result);
+                $.ui.openshed_till.prototype.options.currentSum = [result];
+            } else if (buttonText == "pour") {pour(95);
+            } else if (buttonText == " pour") {pour(170);
+            } else if (buttonText == "-50p") {
+                $("textarea#log").val($("textarea#log").val() + "\n-0.50, members drink");
+
+                $.ui.openshed_till.prototype.options.currentSum.push("- .5");
+                display.val("");
+                result = eval($.ui.openshed_till.prototype.options.currentSum.join("")).toFixed(2);
+                display.val(result);
+                $.ui.openshed_till.prototype.options.currentSum = [result];
+            } else if (buttonText == "Next") {
+                $("textarea#log").val($("textarea#log").val() + "\n\ntotaling " + display.val() + "\n\n");
+                $.ui.openshed_till.prototype.options.currentSum = [];
+                $('#logForm').submit();
+                display.val("");
+            } else if (buttonText == "Other") {
+                //pop
+            } else if (buttonText == "=") {
+                result = eval(display.val()).toFixed(2);
+                display.val(result);
+                $.ui.openshed_till.prototype.options.currentSum = [result];
+            } else if (buttonText == "/" || buttonText == "*" || buttonText == "-" || buttonText == "+") {
+                $.ui.openshed_till.prototype.options.currentSum.push(buttonText);
+                display.val(buttonText);
+            } else {
+                $.ui.openshed_till.prototype.options.currentSum.push(buttonText);
+                if (display.val() == "0" || display.val() == "/" || display.val() == "*" || display.val() == "-" || display.val() == "+") {
+                    display.val("");
+                }
+                display.val(function(i, orig) {
+                    return orig + buttonText;
+                });
+            }
+            $("textarea#log").animate({
+                scrollTop: $("textarea#log")[0].scrollHeight - $("textarea#log").height()
+            }, 0, function() {})
+        }
+    });
+})(jQuery);
+
+//]]>  
+
+</script>
+</head>
+	<body>
+<div id="container">
+  <div id="till"></div>
+</div>
+
+        <p>
+        <a href="#" class="pour" onclick="pour(70)"> short</a>
+        <a href="#" class="pour" onclick="pour(95)"> 1 shot</a>
+        <a href="#" class="pour" onclick="pour(120)"> long</a><br />
+
+        <a href="#" class="pour" onclick="pour(155)"> short</a>
+        <a href="#" class="pour" onclick="pour(170)"> 2 shots</a>
+        <a href="#" class="pour" onclick="pour(195)"> long</a><br />
+
+
+        <a href="#" class="pour" onclick="pour(-1)">Pour</a>
+        <a href="#" class="pour" onclick="pour(0)">Stop</a>
+        </p>
+        
+        <p>
+            <a href="/">Back to menu</a>
+        </p>
+
+
+<form id=logForm action="till" method="post">
+<textarea id=log name=log ></textarea>
+<br />
+<input type="submit" value="Send" />
+</form>
+	</body>
+</html>
